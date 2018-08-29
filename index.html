@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+          <meta charset="utf-8">
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
+     <script src="app.js"></script>
+   <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js"></script>-->
+      
+        <link rel="stylesheet" href="css/style.css">
+         <link rel="stylesheet" href="css/bootstrap.css">
+        <link rel="stylesheet" href="css/font.css">
+    </head>
+    <body>
+        
+        <div ng-app="myapp" ng-controller="myctrl" id="spitak">
+            
+            <div id="per">
+            <div>
+                <span>{{english}}</span><button id="reverse" ng-click="reverse()"><i class="fa fa-refresh fa fa-2x" aria-hidden="true"></i>
+                </button><span>{{armenian}}</span>
+            </div>
+            <div class="box">
+                <img class="thumbnail" src="img/%D0%91%D0%B5%D0%B7%20%D0%B8%D0%BC%D0%B5%D0%BD%D0%B8-1.png">
+            </div>
+        </div>
+            <div ng-show="hay" id="hay">
+                <h4>Հայերենից Անգլերեն</h4>
+                <input class="form-control" type="text" ng-model="filter_text" ng-keypress="press()" >
+                <p>Ձեր ընտրած՝: <b>{{selection}}</b></p>
+                <ul id="block">
+                    <li  ng-repeat="item in items | startsWith:filter_text"  ng-click="thiss(item)">
+                        {{item}}
+                    </li>
+                </ul>
+            </div>
+            <div ng-show="angl" id="angl">
+                   <h4>English to Armenian</h4>
+                <input class="form-control" type="text" ng-model="filter_text" ng-keypress="press_1()"  uppercased>
+            <p>Your selection: <b>{{selection}}</b></p>
+                <ul  id="block_1">
+                    <li ng-repeat="item in items_1 | startsWith:filter_text"  ng-click="thiss(item)">
+                        {{item}}
+                    </li>
+                </ul>
+            </div>
+          
+        </div>
+        <footer>
+            <div class="anun">
+                <p><b>I'm a Junior Developer</b>
+                <img src="img/18011188_247170419085816_7733157716981056380_n.jpg" class="img thumbnail"></p>
+            </div>
+        </footer>
+    </body>
+    
+    <script>
+
+
+   
+   var app = angular.module('myapp', ['components']);
+      angular.module('components', [])  
+        .directive('uppercased', function() {
+    return {
+        require: 'ngModel',        
+        link: function(scope, element, attrs, modelCtrl) {
+            modelCtrl.$parsers.push(function(input) {
+                return input ? input.toUpperCase() : "";
+            });
+            element.css("text-transform","uppercase");
+        }
+    };
+});
+        
+        
+     app .filter('startsWith', function() {
+    return function(items, prefix, itemProperty) {
+      return items.filter(function(item) {
+        var findIn = itemProperty ? item[itemProperty] : item;
+        return findIn.toString().indexOf(prefix) === 0;
+      });
+    };
+  });
+       
+       
+        app.controller("myctrl", function($scope, $http){
+            
+            
+            
+             window.addEventListener("keydown", function(e){
+                 
+               if(e.keyCode === 8) {
+                   if($scope.filter_text.length == 1){
+                    angular.element(document.querySelector("#block")).css("display","none");
+                       angular.element(document.querySelector("#block_1")).css("display","none");
+                   }
+                }
+                
+            });
+            $scope.hay = true;
+            $scope.angl = false;
+            $scope.armenian = "English";
+            $scope.english = "Armenian";
+          
+              var degrees = 180;
+    
+                angular.element(document.querySelector(".box")).css('transition', '-webkit-transform 800ms ease');
+            
+           
+            $scope.reverse = function(){
+               $scope.selection = ""; angular.element(document.querySelector(".box")).css('-webkit-transform', 'rotateY(' + degrees + 'deg)');
+                  degrees += 180;
+                if($scope.angl != true){
+                    
+                    $scope.armenian = "Armenian";
+                    $scope.english = "English";
+                    $scope.hay = false;
+                    $scope.angl = true;
+                     
+                }
+                else{
+                    $scope.armenian = "English";
+                    $scope.english = "Armenian";
+                    $scope.angl = false;
+                    $scope.hay = true;
+                }
+            };
+             $scope.press = function(){
+                
+                if($scope.filter_text == ''){ angular.element(document.querySelector("#block")).css("display","block");
+                }
+                
+                 
+            };
+             $scope.press_1 = function(){
+                 if($scope.filter_text == ''){        angular.element(document.querySelector("#block_1")).css("display","block");
+               }
+                
+                 
+            };
+          
+            $scope.filter_text = '';
+            $scope.thiss = function(item){
+                $scope.selection = item;
+                $scope.filter_text = "";
+            };
+            $http.get("json/menu_1.json").success(function(data){
+               $scope.items = data; 
+            });
+            $http.get("json/menu.json").success(function(data){
+               $scope.items_1 = data; 
+            });
+        });
+        
+    </script>
+</html>
